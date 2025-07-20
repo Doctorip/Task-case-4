@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card book-card p-4">
+      <h2 class="mb-3">{{ book.title }}</h2>
+      <p><b>Автор:</b> {{ book.author }}</p>
+      <p><b>Категория:</b> <span class="badge bg-info text-dark">{{ book.category }}</span></p>
+      <p><b>Год:</b> {{ book.year }}</p>
+      <p><b>Цена:</b> <b>{{ book.price }} ₽</b></p>
+      <p>
+        <b>Статус:</b>
+        <span class="badge {% if book.available %}bg-success{% else %}bg-secondary{% endif %}">
+          {% if book.available %}Доступна{% else %}Недоступна{% endif %}
+        </span>
+      </p>
+      {% if current_user.is_authenticated and book.available %}
+      <div class="mb-2 d-flex gap-2">
+        <form method="post" action="{{ url_for('buy_book', book_id=book.id) }}">
+          <button class="btn btn-success">Купить</button>
+        </form>
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#rentModal">Арендовать</button>
+        <a href="{{ url_for('add_to_cart', book_id=book.id) }}" class="btn btn-outline-success">В корзину</a>
+      </div>
+      {% endif %}
+
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <form method="post" action="{{ url_for('admin_notify', book_id=book.id) }}">
+        <button class="btn btn-outline-info btn-sm my-2" type="submit">Уведомить пользователя</button>
+      </form>
+      {% endif %}
+
+      <a href="{{ url_for('index') }}" class="btn btn-link">← Вернуться к каталогу</a>
+    </div>
+  </div>
+</div>
+<!-- Модальное окно аренды -->
+<div class="modal fade" id="rentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('rent_book', book_id=book.id) }}">
+      <div class="modal-header"><h5 class="modal-title">Арендовать книгу</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">Выберите срок аренды:</div>
+        <select name="duration" class="form-select">
+          <option value="2w">2 недели</option>
+          <option value="1m">1 месяц</option>
+          <option value="3m">3 месяца</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-warning" type="submit">Арендовать</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

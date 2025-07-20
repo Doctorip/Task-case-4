@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Каталог книг</h2>
+<form class="row g-2 mb-4" method="get">
+  <div class="col-12 col-md-3">
+    <input type="text" class="form-control" name="q" value="{{ request.args.get('q', '') }}" placeholder="Поиск по названию/автору">
+  </div>
+  <div class="col-6 col-md-2">
+    <select class="form-select" name="category">
+      <option value="">Категория</option>
+      {% for c in categories %}
+        <option value="{{c}}" {% if request.args.get('category')==c %}selected{% endif %}>{{c}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-6 col-md-2">
+    <select class="form-select" name="year">
+      <option value="">Год</option>
+      {% for y in years %}
+        <option value="{{y}}" {% if request.args.get('year')==y|string %}selected{% endif %}>{{y}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-2">
+    <select class="form-select" name="author">
+      <option value="">Автор</option>
+      {% for a in authors %}
+        <option value="{{a}}" {% if request.args.get('author')==a %}selected{% endif %}>{{a}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+  </div>
+</form>
+<div class="row g-4">
+    {% for book in books %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card book-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">{{ book.title }}</h5>
+                    <div class="mb-1 text-muted">{{ book.author }} | {{ book.year }}</div>
+                    <div class="mb-2"><span class="badge bg-info text-dark">{{ book.category }}</span></div>
+                    <p class="mb-2">Цена: <b>{{ book.price }} ₽</b></p>
+                    <span class="badge {% if book.available %}bg-success{% else %}bg-secondary{% endif %}">
+                        {% if book.available %}Доступна{% else %}Недоступна{% endif %}
+                    </span>
+                </div>
+                <div class="card-footer bg-white border-0 d-flex gap-2">
+                    <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-outline-primary w-50">Подробнее</a>
+                    {% if current_user.is_authenticated and book.available %}
+                      <a href="{{ url_for('add_to_cart', book_id=book.id) }}" class="btn btn-outline-success w-50">В корзину</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

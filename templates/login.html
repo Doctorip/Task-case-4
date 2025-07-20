@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-sm-8 col-md-5 col-lg-4">
+    <div class="card p-4 shadow-sm">
+      <h4 class="mb-3 text-center">Вход</h4>
+      <form method="post">
+        <div class="mb-3">
+          <input name="username" class="form-control" placeholder="Логин" required>
+        </div>
+        <div class="mb-3">
+          <input name="password" type="password" class="form-control" placeholder="Пароль" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Войти</button>
+      </form>
+      <div class="text-center mt-3">
+        <a href="{{ url_for('register') }}">Нет аккаунта? Регистрация</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

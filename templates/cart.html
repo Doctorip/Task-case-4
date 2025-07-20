@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Корзина</h2>
+{% if books %}
+  <form method="post">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Автор</th>
+          <th>Цена</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for book in books %}
+        <tr>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.price }} ₽</td>
+          <td>
+            <a href="{{ url_for('remove_from_cart', book_id=book.id) }}" class="btn btn-sm btn-danger">Удалить</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="mb-3">
+      <button class="btn btn-success me-2" name="action" value="buy">Купить все</button>
+      <button class="btn btn-warning" name="action" value="rent" type="button" data-bs-toggle="collapse" data-bs-target="#rentOptions">Арендовать</button>
+    </div>
+    <div class="collapse mt-2" id="rentOptions">
+      <label>Срок аренды для всех:</label>
+      <select name="duration" class="form-select w-auto d-inline-block" style="max-width:160px; display:inline-block;">
+        <option value="2w">2 недели</option>
+        <option value="1m">1 месяц</option>
+        <option value="3m">3 месяца</option>
+      </select>
+      <button class="btn btn-warning ms-2" name="action" value="rent" type="submit">Подтвердить аренду</button>
+    </div>
+  </form>
+{% else %}
+  <p>Ваша корзина пуста.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Админ-панель</h2>
+<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addBookModal">Добавить книгу</button>
+<!-- Модальное окно для добавления новой книги -->
+<div class="modal fade" id="addBookModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('add_book') }}">
+        <div class="modal-header">
+          <h5 class="modal-title">Добавить новую книгу</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control mb-2" name="title" placeholder="Название" required>
+          <input type="text" class="form-control mb-2" name="author" placeholder="Автор" required>
+          <input type="text" class="form-control mb-2" name="category" placeholder="Категория" required>
+          <input type="number" class="form-control mb-2" name="year" placeholder="Год" required>
+          <input type="number" step="0.01" class="form-control mb-2" name="price" placeholder="Цена" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit">Добавить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-striped admin-table align-middle">
+  <thead class="table-primary">
+    <tr>
+      <th>Название</th>
+      <th>Автор</th>
+      <th>Категория</th>
+      <th>Год</th>
+      <th>Цена</th>
+      <th>Статус</th>
+      <th>Доступна</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <td>{{ book.title }}</td>
+      <td>{{ book.author }}</td>
+      <td>{{ book.category }}</td>
+      <td>{{ book.year }}</td>
+      <td>{{ book.price }} ₽</td>
+      <td>{{ book.status }}</td>
+      <td>
+        {% if book.available %}
+          <span class="badge bg-success">Да</span>
+        {% else %}
+          <span class="badge bg-danger">Нет</span>
+        {% endif %}
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editBook{{book.id}}">Редактировать</button>
+        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteBook{{book.id}}">Удалить</button>
+      </td>
+    </tr>
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editBook{{book.id}}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="post" action="{{ url_for('edit_book', book_id=book.id) }}">
+            <div class="modal-header">
+              <h5 class="modal-title">Редактировать книгу</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <input type="text" class="form-control mb-2" name="title" value="{{book.title}}" required>
+              <input type="text" class="form-control mb-2" name="author" value="{{book.author}}" required>
+              <input type="text" class="form-control mb-2" name="category" value="{{book.category}}" required>
+              <input type="number" class="form-control mb-2" name="year" value="{{book.year}}" required>
+              <input type="number" step="0.01" class="form-control mb-2" name="price" value="{{book.price}}" required>
+              <select name="status" class="form-control mb-2">
+                <option value="available" {% if book.status=='available' %}selected{% endif %}>Доступна</option>
+                <option value="rented" {% if book.status=='rented' %}selected{% endif %}>Арендована</option>
+                <option value="sold" {% if book.status=='sold' %}selected{% endif %}>Продана</option>
+              </select>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="available" value="1" id="bookAvailable{{book.id}}" {% if book.available %}checked{% endif %}>
+                <label class="form-check-label" for="bookAvailable{{book.id}}">
+                  Книга доступна
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="submit">Сохранить</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteBook{{book.id}}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="post" action="{{ url_for('delete_book', book_id=book.id) }}">
+            <div class="modal-header">
+              <h5 class="modal-title">Удалить книгу?</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p>Вы уверены, что хотите удалить книгу <b>{{book.title}}</b>?</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-danger" type="submit">Удалить</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

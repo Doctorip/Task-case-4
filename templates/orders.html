@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Мои книги</h2>
+<h4>Арендованные книги</h4>
+{% if rentals %}
+  <table class="table">
+    <tr>
+      <th>Название</th>
+      <th>Срок аренды</th>
+      <th>До</th>
+    </tr>
+    {% for rent in rentals %}
+      <tr>
+        <td>{{ rent.book.title }}</td>
+        <td>
+          {% if rent.duration == '2w' %}2 недели{% elif rent.duration == '1m' %}1 месяц{% elif rent.duration == '3m' %}3 месяца{% endif %}
+        </td>
+        <td>{{ rent.end_date.strftime('%d.%m.%Y') }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>Нет арендованных книг.</p>
+{% endif %}
+<h4 class="mt-4">Купленные книги</h4>
+{% if bought %}
+  <table class="table">
+    <tr>
+      <th>Название</th>
+      <th>Автор</th>
+      <th>Дата покупки</th>
+      <th>Цена</th>
+    </tr>
+    {% for p in bought %}
+      <tr>
+        <td>{{ p.book.title }}</td>
+        <td>{{ p.book.author }}</td>
+        <td>
+          {% if p.purchase_date %}
+            {{ p.purchase_date.strftime('%d.%m.%Y %H:%M') }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>{{ p.price }} ₽</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>Нет купленных книг.</p>
+{% endif %}
+{% endblock %}
